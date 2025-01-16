@@ -1,7 +1,7 @@
 <style>
   /* General Styling */
   body {
-    background-color: #f5f5f5; /* Subtle light gray for a modern look */
+    background-color: #f5f5f5;
     font-family: Arial, sans-serif;
   }
 
@@ -34,17 +34,6 @@
     padding: 20px;
   }
 
-  /* Filter Styles */
-  label {
-    font-weight: bold;
-    font-size: 0.9rem;
-  }
-
-  input.form-control {
-    border-radius: 4px;
-    border: 1px solid #ddd;
-  }
-
   /* Table Styling */
   .table {
     background-color: #ffffff;
@@ -59,26 +48,51 @@
     background-color: #f1f1f1;
   }
 
-  /* Badge Styling */
-  .badge {
-    padding: 0.5em 0.75em;
-    font-size: 0.85rem;
+  /* Modal Styling */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-dialog {
+    position: relative;
+    margin: 10% auto;
+    max-width: 500px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
     font-weight: bold;
   }
 
-  .badge-success {
-    background-color: #28a745;
-    color: #ffffff;
+  .modal-body {
+    padding: 20px;
   }
 
-  .badge-warning {
-    background-color: #ffc107;
-    color: #212529;
+  .modal-footer {
+    padding: 10px;
+    text-align: right;
+    border-top: 1px solid #ddd;
   }
 
-  .badge-danger {
-    background-color: #dc3545;
-    color: #ffffff;
+  .close {
+    float: right;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
   }
 
   /* Pagination Controls */
@@ -101,7 +115,6 @@
 </style>
 
 <div class="container mt-5">
-
   <!-- Filters Section -->
   <div class="card shadow-sm mb-4">
     <div class="card-header bg-primary text-white">
@@ -110,36 +123,20 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-3 mb-3">
-          <label>Filter by Service</label><br />
-          <input type="text"
-                 class="form-control"
-                 [(ngModel)]="serviceFilter"
-                 (input)="onFilterChange()"
-                 placeholder="Enter Service" />
+          <label>Filter by Service</label>
+          <input type="text" class="form-control" [(ngModel)]="serviceFilter" (input)="onFilterChange()" placeholder="Enter Service" />
         </div>
         <div class="col-md-3 mb-3">
-          <label>Filter by Level</label><br />
-          <input type="text"
-                 class="form-control"
-                 [(ngModel)]="levelFilter"
-                 (input)="onFilterChange()"
-                 placeholder="Enter Level" />
+          <label>Filter by Level</label>
+          <input type="text" class="form-control" [(ngModel)]="levelFilter" (input)="onFilterChange()" placeholder="Enter Level" />
         </div>
         <div class="col-md-3 mb-3">
-          <label>Filter by Start Date</label><br />
-          <input type="date"
-                 class="form-control"
-                 [(ngModel)]="startTimeFilter"
-                 (input)="onFilterChange()"
-                 placeholder="Enter Start Date" />
+          <label>Filter by Start Date</label>
+          <input type="date" class="form-control" [(ngModel)]="startTimeFilter" (input)="onFilterChange()" />
         </div>
         <div class="col-md-3 mb-3">
-          <label>Filter by End Date</label><br />
-          <input type="date"
-                 class="form-control"
-                 [(ngModel)]="endTimeFilter"
-                 (input)="onFilterChange()"
-                 placeholder="Enter End Date" />
+          <label>Filter by End Date</label>
+          <input type="date" class="form-control" [(ngModel)]="endTimeFilter" (input)="onFilterChange()" />
         </div>
       </div>
     </div>
@@ -161,15 +158,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let log of logs">
+          <tr *ngFor="let log of logs" (click)="onRowClick(log)">
             <td>{{ log.service }}</td>
-            <td class="text-uppercase">
-              <span class="badge"
-                    [ngClass]="{
-                  'badge-success': log.level === 'info',
-                  'badge-warning': log.level === 'warning',
-                  'badge-danger': log.level === 'error'
-                }">
+            <td>
+              <span class="badge" [ngClass]="{ 'badge-success': log.level === 'info', 'badge-warning': log.level === 'warning', 'badge-danger': log.level === 'error' }">
                 {{ log.level }}
               </span>
             </td>
@@ -186,16 +178,28 @@
 
   <!-- Pagination Controls -->
   <div class="pagination-controls">
-    <button class="btn btn-primary"
-            (click)="onPageChange(currentPage - 1)"
-            [disabled]="!hasPreviousPage()">
-      Previous
-    </button>
+    <button class="btn btn-primary" (click)="onPageChange(currentPage - 1)" [disabled]="!hasPreviousPage()">Previous</button>
     <span class="text-secondary">Page {{ currentPage }} of {{ totalPages() }}</span>
-    <button class="btn btn-primary"
-            (click)="onPageChange(currentPage + 1)"
-            [disabled]="!hasNextPage()">
-      Next
-    </button>
+    <button class="btn btn-primary" (click)="onPageChange(currentPage + 1)" [disabled]="!hasNextPage()">Next</button>
+  </div>
+</div>
+
+<!-- Log Details Modal -->
+<div class="modal" [style.display]="selectedLog ? 'block' : 'none'">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h5>Log Details</h5>
+      <span class="close" (click)="closeModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <p><strong>Service:</strong> {{ selectedLog?.service }}</p>
+      <p><strong>Level:</strong> {{ selectedLog?.level }}</p>
+      <p><strong>Message:</strong> {{ selectedLog?.message }}</p>
+      <p><strong>Timestamp:</strong> {{ selectedLog?.timestamp | date: 'medium' }}</p>
+      <p *ngIf="selectedLog?.extraDetails"><strong>Extra Details:</strong> {{ selectedLog?.extraDetails }}</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="closeModal()">Close</button>
+    </div>
   </div>
 </div>

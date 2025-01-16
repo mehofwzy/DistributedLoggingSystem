@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AuthService } from './auth.service'; // Import the AuthService
 
 export interface LogEntry {
@@ -9,6 +9,7 @@ export interface LogEntry {
   level: string;
   message: string;
   timestamp: string;
+  extraDetails?: string;
 }
 
 export interface LogResponse {

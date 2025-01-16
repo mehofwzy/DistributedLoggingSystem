@@ -21,6 +21,7 @@ export class LogListComponent implements OnInit {
 
   currentPage: number = 1;
   pageSize: number = 5;
+  selectedLog: LogEntry | null = null;
 
   constructor(private logService: LogService) { }
 
@@ -86,5 +87,13 @@ export class LogListComponent implements OnInit {
   // Check if the previous page exists
   hasPreviousPage(): boolean {
     return this.currentPage > 1;
+  }
+
+  onRowClick(log: LogEntry): void {
+    this.selectedLog = log;
+  }
+
+  closeModal(): void {
+    this.selectedLog = null;
   }
 }
