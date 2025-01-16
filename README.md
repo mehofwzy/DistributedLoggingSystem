@@ -167,7 +167,8 @@ This project is made by Eng. Mohamed Fawzy (.NET Developer) for (Nano Health Sui
 
 ## Contact Information
 
-Mohamed Fawzy
-+201095194149
-mehofawzy@outlook.com
-linkedin.com/in/mehofwzy
+- Mohamed Fawzy
+- +201095194149
+- mehofawzy@outlook.com
+- linkedin.com/in/mehofwzy
+
